@@ -1,0 +1,40 @@
+name: Deploy Snowflake Changes
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checkout code
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      # Step 2: Setup Python
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      # Step 3: Install schemachange
+      - name: Install schemachange
+        run: pip install schemachange
+
+      # Step 4: Run schemachange
+      - name: Deploy to Snowflake
+        env:
+          SNOWFLAKE_PASSWORD: ${{ secrets.SNOWFLAKE_PASSWORD }}
+        run: |
+          schemachange deploy \
+            -f schemachange \
+            -a ${{ secrets.SNOWFLAKE_ACCOUNT }} \
+            -u ${{ secrets.SNOWFLAKE_USER }} \
+            -r ACCOUNTADMIN \
+            -w COMPUTE_WH \
+            -d DB_DP_DEV \
+            -s BR_IN \
+            --change-history-table DB_DP_DEV.BR_IN.CHANGE_HISTORY
