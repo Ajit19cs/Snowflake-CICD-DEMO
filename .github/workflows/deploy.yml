@@ -21,6 +21,13 @@ jobs:
       - name: Terraform Init
         run: terraform init
         working-directory: terraform
+        
+      #  Terraform (Plan step)
+      - name: Terraform Plan
+        run: terraform plan
+        working-directory: terraform
+        env:
+          SNOWFLAKE_PASSWORD: ${{ secrets.SNOWFLAKE_PASSWORD }}  
 
       # 🔹 Terraform Apply
       - name: Terraform Apply

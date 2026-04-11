@@ -28,3 +28,29 @@ resource "snowflake_schema" "BR_IN" {
   is_transient = false
   with_managed_access = false
 }
+
+#  NEW DBs
+resource "snowflake_database" "DB_DP_QA" {
+  name = "DB_DP_QA"
+}
+
+resource "snowflake_database" "DB_DP_PROD" {
+  name = "DB_DP_PROD"
+}
+
+#  NEW schemas
+resource "snowflake_schema" "BR_IN_QA" {
+  database = snowflake_database.DB_DP_QA.name
+  name     = "BR_IN"
+
+  is_transient        = false
+  with_managed_access = false
+}
+
+resource "snowflake_schema" "BR_IN_PROD" {
+  database = snowflake_database.DB_DP_PROD.name
+  name     = "BR_IN"
+
+  is_transient        = false
+  with_managed_access = false
+}
