@@ -59,7 +59,8 @@ jobs:
             DB_NAME=DB_DP_QA
           elif [ "${GITHUB_REF}" == "refs/heads/main" ]; then
             DB_NAME=DB_DP_PROD
-
+          fi
+          
           echo "Deploying to $DB_NAME"
 
           schemachange deploy \
