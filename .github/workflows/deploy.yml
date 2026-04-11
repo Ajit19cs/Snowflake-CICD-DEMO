@@ -3,8 +3,9 @@ name: Deploy Snowflake
 on:
   push:
     branches:
-      - main
-      - dev  
+      - dev
+      - qa
+      - main      
 
 jobs:
   deploy:
@@ -54,10 +55,12 @@ jobs:
         run: |
           if [ "${GITHUB_REF}" == "refs/heads/dev" ]; then
             DB_NAME=DB_DP_DEV
-          elif [ "${GITHUB_REF}" == "refs/heads/main" ]; then
+          elif [ "${GITHUB_REF}" == "refs/heads/qa" ]; then
             DB_NAME=DB_DP_QA
+          elif [ "${GITHUB_REF}" == "refs/heads/main" ]; then
+            DB_NAME=DB_DP_PROD
           fi
-
+          
           echo "Deploying to $DB_NAME"
 
           schemachange deploy \
