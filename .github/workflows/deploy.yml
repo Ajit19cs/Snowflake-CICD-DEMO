@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - dev
+      - qa
 
 jobs:
   deploy:
@@ -22,13 +23,13 @@ jobs:
       - name: Terraform Init
         run: terraform init
         working-directory: terraform
-        
-      #  Terraform (Plan step)
+
+      # 🔹 Terraform Plan
       - name: Terraform Plan
         run: terraform plan
         working-directory: terraform
         env:
-          SNOWFLAKE_PASSWORD: ${{ secrets.SNOWFLAKE_PASSWORD }}  
+          SNOWFLAKE_PASSWORD: ${{ secrets.SNOWFLAKE_PASSWORD }}
 
       # 🔹 Terraform Apply
       - name: Terraform Apply
@@ -47,17 +48,27 @@ jobs:
       - name: Install schemachange
         run: pip install schemachange
 
-      # 🔹 Run schemachange
+      # 🔹 Run schemachange (dynamic DB)
       - name: Deploy schema changes
         env:
           SNOWFLAKE_PASSWORD: ${{ secrets.SNOWFLAKE_PASSWORD }}
         run: |
+          if [ "${GITHUB_REF}" == "refs/heads/dev" ]; then
+            DB_NAME=DB_DP_DEV
+          elif [ "${GITHUB_REF}" == "refs/heads/main" ]; then
+            DB_NAME=DB_DP_QA
+          fi
+
+          echo "Deploying to $DB_NAME"
+
           schemachange deploy \
             -f schemachange \
             -a ${{ secrets.SNOWFLAKE_ACCOUNT }} \
             -u ${{ secrets.SNOWFLAKE_USER }} \
             -r ACCOUNTADMIN \
             -w COMPUTE_WH \
-            -d DB_DP_DEV \
+            -d $DB_NAME \
             -s BR_IN \
-            --change-history-table DB_DP_DEV.BR_IN.CHANGE_HISTORY
+
+            --change-history-table $DB_NAME.BR_IN.CHANGE_HISTORY
+
