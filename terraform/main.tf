@@ -23,4 +23,8 @@ resource "snowflake_database" "DB_DP_DEV" {
 resource "snowflake_schema" "BR_IN" {
   database = snowflake_database.DB_DP_DEV.name
   name     = "BR_IN"
+  
+   # IMPORTANT: prevents recreation issue
+  is_transient = false
+  with_managed_access = false
 }
