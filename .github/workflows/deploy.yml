@@ -1,4 +1,4 @@
-name: Deploy Snowflake Changes
+name: Deploy Snowflake
 
 on:
   push:
@@ -10,22 +10,37 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Step 1: Checkout code
       - name: Checkout Code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
-      # Step 2: Setup Python
+      # 🔹 Install Terraform
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      # 🔹 Terraform Init
+      - name: Terraform Init
+        run: terraform init
+        working-directory: terraform
+
+      # 🔹 Terraform Apply
+      - name: Terraform Apply
+        run: terraform apply -auto-approve
+        working-directory: terraform
+        env:
+          SNOWFLAKE_PASSWORD: ${{ secrets.SNOWFLAKE_PASSWORD }}
+
+      # 🔹 Install Python
       - name: Setup Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: '3.9'
 
-      # Step 3: Install schemachange
+      # 🔹 Install schemachange
       - name: Install schemachange
         run: pip install schemachange
 
-      # Step 4: Run schemachange
-      - name: Deploy to Snowflake
+      # 🔹 Run schemachange
+      - name: Deploy schema changes
         env:
           SNOWFLAKE_PASSWORD: ${{ secrets.SNOWFLAKE_PASSWORD }}
         run: |
