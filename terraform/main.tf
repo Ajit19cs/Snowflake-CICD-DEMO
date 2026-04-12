@@ -11,10 +11,13 @@ provider "snowflake" {
   organization_name = "nlvnyvj"
   account_name      = "ww58104"
 
-  user     = "YOGITA24KSHIRSAGAR"
-  password = "Manjirica@2907"
+  user     = var.snowflake_user
+  password = var.snowflake_password"
   role     = "ACCOUNTADMIN"
 }
+
+variable "snowflake_user" {}
+variable "snowflake_password" {}
 
 resource "snowflake_database" "DB_DP_DEV" {
   name = "DB_DP_DEV"
