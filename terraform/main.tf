@@ -12,7 +12,7 @@ provider "snowflake" {
   account_name      = "ww58104"
 
   user     = var.snowflake_user
-  password = var.snowflake_password"
+  password = var.snowflake_password
   role     = "ACCOUNTADMIN"
 }
 
