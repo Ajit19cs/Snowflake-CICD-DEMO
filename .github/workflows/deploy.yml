@@ -10,6 +10,10 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    
+    env:
+      TF_VAR_snowflake_user: ${{ secrets.SNOWFLAKE_USER }}
+      TF_VAR_snowflake_password: ${{ secrets.SNOWFLAKE_PASSWORD }}
 
     steps:
       - name: Checkout Code
@@ -28,17 +32,13 @@ jobs:
       - name: Terraform Plan
         run: terraform plan
         working-directory: terraform
-        env:
-          TF_VAR_snowflake_user: ${{ secrets.SNOWFLAKE_USER }}
-          TF_VAR_snowflake_password: ${{ secrets.SNOWFLAKE_PASSWORD }}
+       
 
       # 🔹 Terraform Apply
       - name: Terraform Apply
         run: terraform apply -auto-approve
         working-directory: terraform
-        env:
-          TF_VAR_snowflake_user: ${{ secrets.SNOWFLAKE_USER }}
-          TF_VAR_snowflake_password: ${{ secrets.SNOWFLAKE_PASSWORD }}
+        
 
       # 🔹 Install Python
       - name: Setup Python
