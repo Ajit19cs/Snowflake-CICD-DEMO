@@ -5,11 +5,15 @@ on:
     branches:
       - dev
       - qa
-      - main      
+      - main
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    
+    env:
+      TF_VAR_snowflake_user: ${{ secrets.SNOWFLAKE_USER }}
+      TF_VAR_snowflake_password: ${{ secrets.SNOWFLAKE_PASSWORD }}
 
     steps:
       - name: Checkout Code
@@ -28,15 +32,13 @@ jobs:
       - name: Terraform Plan
         run: terraform plan
         working-directory: terraform
-        env:
-          SNOWFLAKE_PASSWORD: ${{ secrets.SNOWFLAKE_PASSWORD }}
+       
 
       # 🔹 Terraform Apply
       - name: Terraform Apply
         run: terraform apply -auto-approve
         working-directory: terraform
-        env:
-          SNOWFLAKE_PASSWORD: ${{ secrets.SNOWFLAKE_PASSWORD }}
+        
 
       # 🔹 Install Python
       - name: Setup Python
@@ -53,11 +55,13 @@ jobs:
         env:
           SNOWFLAKE_PASSWORD: ${{ secrets.SNOWFLAKE_PASSWORD }}
         run: |
-          if [ "${GITHUB_REF}" == "refs/heads/dev" ]; then
+          echo "Branch is: $GITHUB_REF_NAME"
+
+          if [ "$GITHUB_REF_NAME" == "dev" ]; then
             DB_NAME=DB_DP_DEV
-          elif [ "${GITHUB_REF}" == "refs/heads/qa" ]; then
+          elif [ "$GITHUB_REF_NAME" == "qa" ]; then
             DB_NAME=DB_DP_QA
-          elif [ "${GITHUB_REF}" == "refs/heads/main" ]; then
+          elif [ "$GITHUB_REF_NAME" == "main" ]; then
             DB_NAME=DB_DP_PROD
           fi
           
